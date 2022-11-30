@@ -1,0 +1,72 @@
+﻿@page "/"
+@using System.Net.Http.Json
+@using task5.Shared
+
+<PageTitle>Home</PageTitle>
+
+<MudSelect T="string" @bind-Value = "@_country" Label="Country" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" SelectedValuesChanged = "OnInitializedAsync">
+    <MudSelectItem Value="@("Danish")"> Denmark (Danmark) </MudSelectItem>
+    <MudSelectItem Value="@("Swiss")"> Switzerland </MudSelectItem>
+</MudSelect>
+
+<MudTextField @bind-Value = "@_seed" Label="Seed" Variant="Variant.Outlined" Margin="Margin.Dense" TextChanged = "OnInitializedAsync"/>
+<MudTextField @bind-Value = "@_errors" Label="Errors" Variant="Variant.Outlined" Margin="Margin.Dense"  TextChanged = "OnInitializedAsync"/>
+
+
+    <MudTable Items="@Users" FixedHeader="@fixed_header" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info" FixedFooter="@fixed_footer" Height="@("400px")" >
+        <HeaderContent>
+            <MudTh>№</MudTh>
+            <MudTh>ID</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Adress</MudTh>
+            <MudTh>Phone</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="№">@context.Number</MudTd>
+            <MudTd DataLabel="ID">@context.ID</MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Adress">@context.Adress</MudTd>
+            <MudTd DataLabel="Phone">@context.Phone</MudTd>
+        </RowTemplate>
+        <FooterContent>
+        
+    </FooterContent>
+    </MudTable>
+
+@code {
+    private bool fixed_header = true;
+    private bool fixed_footer = false;
+    private bool _loading;
+    public String _country = "Danish";
+    public double _errors = 0.0;
+    public int _seed = 0;
+    private int _page = 0;
+    List<User> temp = new List<User>();
+    IEnumerable<User>? Users;
+
+    protected override async Task OnInitializedAsync()
+    {   
+        _page = 0;  
+        String msg = $"{_country},{_errors},{_seed},{_page}";
+        await HttpClientJsonExtensions.PostAsJsonAsync<String>(httpClient,"User",msg);
+        temp = await httpClient.GetFromJsonAsync<List<User>>("User");
+        Users = GetIEnumerable(temp);
+    }
+
+    private async Task GetSomeMoreAsync()
+    {   
+        _loading = true;
+        _page++;
+        String msg = $"{_country},{_errors},{_seed},{_page}";
+        await HttpClientJsonExtensions.PostAsJsonAsync<String>(httpClient,"User",msg);
+        temp.AddRange(await httpClient.GetFromJsonAsync<List<User>>("User"));
+        Users = GetIEnumerable(temp);
+        _loading = false;
+    }
+
+    private IEnumerable<User> GetIEnumerable(List<User> temp)
+    {
+        List<User> Users = temp;
+        return Users;
+    }
+}

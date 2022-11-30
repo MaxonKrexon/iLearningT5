@@ -1,0 +1,12 @@
+/home/maxon/Documents/task5/Shared/bin/Debug/net6.0/task5.Shared.deps.json
+/home/maxon/Documents/task5/Shared/bin/Debug/net6.0/task5.Shared.dll
+/home/maxon/Documents/task5/Shared/bin/Debug/net6.0/ref/task5.Shared.dll
+/home/maxon/Documents/task5/Shared/bin/Debug/net6.0/task5.Shared.pdb
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.csproj.AssemblyReference.cache
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.GeneratedMSBuildEditorConfig.editorconfig
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.AssemblyInfoInputs.cache
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.AssemblyInfo.cs
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.csproj.CoreCompileInputs.cache
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.dll
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/ref/task5.Shared.dll
+/home/maxon/Documents/task5/Shared/obj/Debug/net6.0/task5.Shared.pdb
