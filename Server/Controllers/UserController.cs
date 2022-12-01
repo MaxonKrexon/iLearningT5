@@ -52,11 +52,11 @@ public class UserController : ControllerBase
 
             foreach (var num in Enumerable.Range(0, AmountOfUsers))
             {
-                var rand = new Random(((num + Page) * 10) + Seed);
+                var rand = new Random(num + (Page * AmountOfUsers) + (Seed * 31415));
                 var user = Create.Unit(Country, Errors, rand);
 
                 users[num] = new User();
-                users[num].Number = num + (Page * 10);
+                users[num].Number = num + (Page * AmountOfUsers);
                 users[num].ID = user[0];
                 users[num].Name = user[1];
                 users[num].Adress = user[2];
