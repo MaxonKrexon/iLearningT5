@@ -53,11 +53,11 @@ public class UserController : ControllerBase
 
             for (int j = 0; j < AmountOfUsers; j++)
             {
-                var rand = new Random(seed + j);
+                var rand = new Random(seed + j + (Page * 10));
                 var user = Create.Unit(Country, Errors, rand);
 
                 users[j] = new User();
-                users[j].Number = j + (Page * 10);
+                users[j].Number = 1 + j + (Page * 10);
                 users[j].ID = user[0];
                 users[j].Name = user[1];
                 users[j].Adress = user[2];
