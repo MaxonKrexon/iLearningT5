@@ -9,8 +9,30 @@
     <MudSelectItem Value="@("Swiss")"> Switzerland </MudSelectItem>
 </MudSelect>
 
-<MudTextField @bind-Value = "@_seed" Label="Seed" Variant="Variant.Outlined" Margin="Margin.Dense" TextChanged = "OnInitializedAsync"/>
+<div>
+<div class="d-inline-flex">
+<MudTextField @bind-Value = "@_seed" Label="Seed" Variant="Variant.Outlined" Margin="Margin.Dense"  TextChanged = "OnInitializedAsync"/>
+</div>
+<div class="d-inline-flex">
+<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" OnClick="SeedInc">+</MudButton>
+</div>
+<div class="d-inline-flex">
+<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" OnClick="SeedDec">-</MudButton>
+</div>
+
+<div class="d-inline-flex">
 <MudTextField @bind-Value = "@_errors" Label="Errors" Variant="Variant.Outlined" Margin="Margin.Dense"  TextChanged = "OnInitializedAsync"/>
+</div>
+<div class="d-inline-flex">
+<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" OnClick="ErrorsInc">+</MudButton>
+</div>
+<div class="d-inline-flex">
+<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" OnClick="ErrorsDec">-</MudButton>
+</div>
+<div class="d-inline-flex">
+<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Default" OnClick="ErrorsRand">Random</MudButton>
+</div>
+</div>
 
 <div id="Table" class="ma-0" style="height:350px; overflow: auto;">
 @if (Users != null)
@@ -35,7 +57,7 @@
             }
         </tbody> 
     </table>
-}
+    }
     <MudScrollToTop TopOffset="100"
                     OnScroll="GetSomeMoreAsync"
                     Selector="#Table"
@@ -46,18 +68,16 @@
 </div>
 
 @code {
-    private bool fixed_header = true;
-    private bool _loading;
     public String _country = "Danish";
     public double _errors = 0.0;
     public int _seed = 0;
     private int _page = 0;
-    List<User> temp = new List<User>();
+    List<User>? temp = new List<User>();
     IEnumerable<User>? Users;
 
     protected override async Task OnInitializedAsync()
     {   
-        _page = 0;  
+        _page = 0;
         String msg = $"{_country},{_errors},{_seed},{_page},20";
         await HttpClientJsonExtensions.PostAsJsonAsync<String>(httpClient,"User",msg);
         temp = await httpClient.GetFromJsonAsync<List<User>>("User");
@@ -67,13 +87,11 @@
     private async Task GetSomeMoreAsync(ScrollEventArgs e)
     {   
         if (e.FirstChildBoundingClientRect.Height - e.ScrollTop <= 350){
-        _loading = true;
         _page++;
         String msg = $"{_country},{_errors},{_seed},{_page},10";
         await HttpClientJsonExtensions.PostAsJsonAsync<String>(httpClient,"User",msg);
         temp.AddRange(await httpClient.GetFromJsonAsync<List<User>>("User"));
         Users = GetIEnumerable(temp);
-        _loading = false;
         }
     }
 
@@ -81,5 +99,34 @@
     {
         List<User> Users = temp;
         return Users;
+    }
+
+    private async Task ErrorsInc(){
+        _errors+=0.5;
+        await OnInitializedAsync();
+    }
+
+    private async Task ErrorsDec(){
+        if(_errors != 0.0){
+            _errors-=0.5;
+        }
+        await OnInitializedAsync();
+    }
+
+    private async Task SeedInc(){
+        _seed+=1;
+        await OnInitializedAsync();
+    }
+
+    private async Task SeedDec(){
+        if(_seed != 0){
+            _seed-=1;
+        }
+        await OnInitializedAsync();
+    }
+
+    private async Task ErrorsRand(){
+        Random r = new Random();
+        _errors = r.Next(0, 1000);
     }
 }
