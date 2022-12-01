@@ -12,30 +12,41 @@
 <MudTextField @bind-Value = "@_seed" Label="Seed" Variant="Variant.Outlined" Margin="Margin.Dense" TextChanged = "OnInitializedAsync"/>
 <MudTextField @bind-Value = "@_errors" Label="Errors" Variant="Variant.Outlined" Margin="Margin.Dense"  TextChanged = "OnInitializedAsync"/>
 
-
-    <MudTable Items="@Users" FixedHeader="@fixed_header" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info" FixedFooter="@fixed_footer" Height="@("400px")" >
-        <HeaderContent>
-            <MudTh>№</MudTh>
-            <MudTh>ID</MudTh>
-            <MudTh>Name</MudTh>
-            <MudTh>Adress</MudTh>
-            <MudTh>Phone</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="№">@context.Number</MudTd>
-            <MudTd DataLabel="ID">@context.ID</MudTd>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Adress">@context.Adress</MudTd>
-            <MudTd DataLabel="Phone">@context.Phone</MudTd>
-        </RowTemplate>
-        <FooterContent>
-        
-    </FooterContent>
-    </MudTable>
+<div id="Table" class="ma-0" style="height:350px; overflow: auto;">
+@if (Users != null)
+    {
+    <table class = "table" style ="height: 350px;">
+        <thead>
+            <th>№</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Adress</th>
+            <th>Phone</th>
+        </thead>
+        <tbody>
+            @foreach(var user in Users){
+                <tr>
+                <td>@user.Number</td>
+                <td>@user.ID</td>
+                <td>@user.Name</td>
+                <td>@user.Adress</td>
+                <td>@user.Phone</td>
+                </tr>
+            }
+        </tbody> 
+    </table>
+}
+    <MudScrollToTop TopOffset="100"
+                    OnScroll="GetSomeMoreAsync"
+                    Selector="#Table"
+                    VisibleCssClass="visible absolute"
+                    HiddenCssClass="invisible">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Filled.ArrowUpward" Color="Color.Info">Go to top</MudButton>
+    </MudScrollToTop>
+</div>
 
 @code {
     private bool fixed_header = true;
-    private bool fixed_footer = false;
     private bool _loading;
     public String _country = "Danish";
     public double _errors = 0.0;
@@ -47,21 +58,23 @@
     protected override async Task OnInitializedAsync()
     {   
         _page = 0;  
-        String msg = $"{_country},{_errors},{_seed},{_page}";
+        String msg = $"{_country},{_errors},{_seed},{_page},20";
         await HttpClientJsonExtensions.PostAsJsonAsync<String>(httpClient,"User",msg);
         temp = await httpClient.GetFromJsonAsync<List<User>>("User");
         Users = GetIEnumerable(temp);
     }
 
-    private async Task GetSomeMoreAsync()
+    private async Task GetSomeMoreAsync(ScrollEventArgs e)
     {   
+        if (e.FirstChildBoundingClientRect.Height - e.ScrollTop <= 350){
         _loading = true;
         _page++;
-        String msg = $"{_country},{_errors},{_seed},{_page}";
+        String msg = $"{_country},{_errors},{_seed},{_page},10";
         await HttpClientJsonExtensions.PostAsJsonAsync<String>(httpClient,"User",msg);
         temp.AddRange(await httpClient.GetFromJsonAsync<List<User>>("User"));
         Users = GetIEnumerable(temp);
         _loading = false;
+        }
     }
 
     private IEnumerable<User> GetIEnumerable(List<User> temp)
