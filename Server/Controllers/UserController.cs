@@ -16,7 +16,7 @@ namespace task5.Server.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    
+
 
     public UserController(ILogger<UserController> logger)
     {
@@ -24,43 +24,59 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public void Post([FromBody]String msg){
-        System.IO.File.WriteAllText("param.txt",msg);
+    public void Post([FromBody] String msg)
+    {
+        System.IO.File.WriteAllText("param.txt", msg);
     }
 
     [HttpGet]
     public string Get()
-    {   
-        String msg = System.IO.File.ReadAllText("param.txt");
+    {
+        if (System.IO.File.Exists("param.txt"))
+        {
+            String msg = System.IO.File.ReadAllText("param.txt");
 
-        string[] parameters = new string[4];
-        parameters = msg.Split(",");
-        String Country = parameters[0];
-        double Errors = Convert.ToDouble(parameters[1]);
-        int Seed = Convert.ToInt32(parameters[2]);
-        int Page = Convert.ToInt32(parameters[3]);
-        System.IO.File.Delete("param.txt");
-        int AmountOfUsers = 10;
+            string[] parameters = new string[5];
+            parameters = msg.Split(",");
 
-        var seed = CheckSeed(Seed);
-        
-        User[] users = new User[AmountOfUsers];
+            String Country = parameters[0];
+            double Errors = Convert.ToDouble(parameters[1]);
+            int Seed = Convert.ToInt32(parameters[2]);
+            int Page = Convert.ToInt32(parameters[3]);
+            int AmountOfUsers = Convert.ToInt32(parameters[4]);
 
-        for (int j = 0; j < AmountOfUsers; j++)
-        {   
-            var rand = new Random(seed + j);
-            var user = Create.Unit(Country, Errors, rand);
+            System.IO.File.Delete("param.txt");
 
-            users[j] = new User();
-            users[j].Number = j + (Page * 10);
-            users[j].ID = user[0];
-            users[j].Name = user[1]; 
-            users[j].Adress = user[2]; 
-            users[j].Phone = user[3]; 
+            var seed = CheckSeed(Seed);
+
+            User[] users = new User[AmountOfUsers];
+
+            for (int j = 0; j < AmountOfUsers; j++)
+            {
+                var rand = new Random(seed + j);
+                var user = Create.Unit(Country, Errors, rand);
+
+                users[j] = new User();
+                users[j].Number = j + (Page * 10);
+                users[j].ID = user[0];
+                users[j].Name = user[1];
+                users[j].Adress = user[2];
+                users[j].Phone = user[3];
+            }
+
+            string json = JsonConvert.SerializeObject(users);
+            return json;
         }
-
-        string json = JsonConvert.SerializeObject(users);
-        return json;
+        else{
+            var NullUser = new User();
+            NullUser.Number = 0;
+            NullUser.ID = "";
+            NullUser.Name = "";
+            NullUser.Adress = "";
+            NullUser.Phone = "";
+            string json = JsonConvert.SerializeObject(NullUser);
+            return json;
+        }
     }
 
     public static int CheckSeed(int CustomSeed)
@@ -78,4 +94,3 @@ public class UserController : ControllerBase
     }
 
 }
- 
